@@ -47,13 +47,13 @@ jobs:
         uses: Azure/k8s-deploy@v1
         with:
           manifests: |
-            k8s/db/deployment.yaml
-            k8s/db/service.yaml
+            k8s/db/deployment.yml
+            k8s/db/service.yml
       # Deploia a aplicação
       - name: Deploy App to Kubernetes cluster
         uses: Azure/k8s-deploy@v1
         with:
           manifests: |
-            k8s/app/deployment.yaml
-            k8s/app/service.yaml
+            k8s/app/deployment.yml
+            k8s/app/service.yml
           images: luizgustavoob/new-rotten-potatoes:${{ github.run_number }}

@@ -32,4 +32,4 @@ jobs:
           context: ./src
           file: ./src/Dockerfile
           push: true
-          tags: luizgustavoob/rotten-potatoes:v${{ github.run_number }}
+          tags: luizgustavoob/new-rotten-potatoes:v${{ github.run_number }}

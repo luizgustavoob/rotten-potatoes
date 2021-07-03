@@ -29,7 +29,7 @@ jobs:
           context: src
           file: src/Dockerfile
           push: true
-          tags: luizgustavoob/new-rotten-potatoes:${{ github.run_number }}
+          tags: luizgustavoob/rotten-potatoes:${{ github.run_number }}
   cd:
     runs-on: ubuntu-latest
     needs: [ci] # espera o ci acabar
@@ -56,4 +56,4 @@ jobs:
           manifests: |
             k8s/app/deployment.yml
             k8s/app/service.yml
-          images: luizgustavoob/new-rotten-potatoes:${{ github.run_number }}
+          images: luizgustavoob/rotten-potatoes:${{ github.run_number }}

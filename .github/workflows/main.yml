@@ -1,0 +1,59 @@
+name: my-ci-cd
+
+# events
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # permite startar manualmente
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      # Baixa o repo
+      - uses: actions/checkout@v2      
+      # Login no dockerhub
+      - name: Docker Login
+        uses: docker/login-action@v1.10.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME  }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}      
+      # Build na imagem
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2.6.1
+        with:
+          context: src
+          file: src/Dockerfile
+          push: true
+          tags: luizgustavoob/rotten-potatoes:${{ github.run_number }}
+  cd:
+    runs-on: ubuntu-latest
+    needs: [ci] # espera o ci acabar
+    steps:
+      # Baixa o repo
+      - uses: actions/checkout@v2
+      # Atribui o contexto
+      - name: Kubernetes set context
+        uses: Azure/k8s-set-context@v1.1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG_K8S_DO }}
+      # Deploia o mongo
+      - name: Deploy MongoDB to Kubernetes cluster
+        uses: Azure/k8s-deploy@v1
+        with:
+          manifests: |
+            k8s/db/deployment.yml
+            k8s/db/service.yml
+      # Deploia a aplicação
+      - name: Deploy App to Kubernetes cluster
+        uses: Azure/k8s-deploy@v1
+        with:
+          manifests: |
+            k8s/app/deployment.yml
+            k8s/app/service.yml
+          images: luizgustavoob/rotten-potatoes:${{ github.run_number }}
